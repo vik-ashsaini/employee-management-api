@@ -1,4 +1,5 @@
-﻿namespace EmployeeAdminAPI { 
+﻿namespace employee_management_api.Models
+{ 
     public class EmployeeModel
     {
         public int Id { get; set; }

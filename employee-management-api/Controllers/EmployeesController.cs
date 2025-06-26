@@ -1,55 +1,65 @@
-﻿using EmployeeAdminAPI;
+﻿using employee_management_api.Models;
+using employee_management_api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeesController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
-        private static List<EmployeeModel> employees = new List<EmployeeModel>
+        private readonly IRepository<EmployeeModel> _repo;
+
+        public EmployeeController(IRepository<EmployeeModel> repo)
         {
-            new EmployeeModel { Id = 1, Name = "Alice Smith", Position = "Developer", Salary = 75000 },
-            new EmployeeModel { Id = 2, Name = "Bob Johnson", Position = "Manager", Salary = 90000 },
-            new EmployeeModel { Id = 3, Name = "Carol Williams", Position = "Designer", Salary = 68000 }
-        };
+            _repo = repo;
+        }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(employees);
+        public async Task<IActionResult> GetAll() =>
+            Ok(await _repo.GetAllAsync());
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var emp = employees.FirstOrDefault(e => e.Id == id);
-            return emp == null ? NotFound() : Ok(emp);
+            var employee = await _repo.GetByIdAsync(id);
+            return employee == null ? NotFound() : Ok(employee);
         }
 
         [HttpPost]
-        public IActionResult Create(EmployeeModel employee)
+        public async Task<IActionResult> Create(EmployeeModel employee)
         {
-            employee.Id = employees.Max(e => e.Id) + 1;
-            employees.Add(employee);
-            return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
+            var created = await _repo.AddAsync(employee);
+            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, EmployeeModel updated)
+        public async Task<IActionResult> Update(int id, EmployeeModel employee)
         {
-            var emp = employees.FirstOrDefault(e => e.Id == id);
-            if (emp == null) return NotFound();
-            emp.Name = updated.Name;
-            emp.Position = updated.Position;
-            emp.Salary = updated.Salary;
-            return NoContent();
+            if (id != employee.Id) return BadRequest();
+            var updated = await _repo.UpdateAsync(employee);
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var emp = employees.FirstOrDefault(e => e.Id == id);
-            if (emp == null) return NotFound();
-            employees.Remove(emp);
-            return NoContent();
+            var deleted = await _repo.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
+        }
+
+        [HttpGet("department/{name}")]
+        public async Task<IActionResult> GetByDepartment(string name)
+        {
+            var employees = await _repo.FindAsync(e => e.Position == name);
+            return Ok(employees);
+        }
+
+        [HttpGet("high-earners/{minSalary}")]
+        public async Task<IActionResult> GetHighEarners(decimal minSalary)
+        {
+            var employees = await _repo.FindAsync(e => e.Salary >= minSalary);
+            return Ok(employees);
         }
     }
 }
