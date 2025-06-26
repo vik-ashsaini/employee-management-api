@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using employee_management_api.Context;
 
@@ -11,9 +12,11 @@ using employee_management_api.Context;
 namespace employee_management_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250625150910_enableEmp")]
+    partial class enableEmp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,60 @@ namespace employee_management_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EmployeeAdminAPIemployee_management_api.Models.EmployeeModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Alice Johnson",
+                            Position = "HR",
+                            Salary = 55000m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Bob Smith",
+                            Position = "IT",
+                            Salary = 72000m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Charlie Brown",
+                            Position = "Finance",
+                            Salary = 68000m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Diana Prince",
+                            Position = "IT",
+                            Salary = 90000m
+                        });
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -218,60 +275,6 @@ namespace employee_management_api.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("employee_management_api.Models.EmployeeModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Alice Johnson",
-                            Position = "HR",
-                            Salary = 55000m
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Bob Smith",
-                            Position = "IT",
-                            Salary = 72000m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Charlie Brown",
-                            Position = "Finance",
-                            Salary = 68000m
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Diana Prince",
-                            Position = "IT",
-                            Salary = 90000m
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

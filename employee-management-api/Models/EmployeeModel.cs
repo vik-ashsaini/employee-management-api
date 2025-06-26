@@ -1,4 +1,4 @@
-﻿namespace EmployeeAdminAPIemployee_management_api.Models
+﻿namespace employee_management_api.Models
 { 
     public class EmployeeModel
     {
